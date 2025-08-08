@@ -3,7 +3,7 @@ const urlsToCache = [
   '/',
   'index.html',
   'manifest.json',
-  'matematico192.png',
+  'https://raw.githubusercontent.com/apishunior2024/matematico/refs/heads/main/matematico192.jpg',
   'matematico512.png',
   // agrega otros recursos CSS, JS, fuentes, etc, según tu proyecto
 ];
@@ -21,3 +21,4 @@ self.addEventListener('fetch', event => {
       .then(response => response || fetch(event.request))
   );
 });
+
