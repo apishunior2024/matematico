@@ -8,7 +8,7 @@
 <!-- Manifest y meta para PWA -->
 <link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#a0c4ff" />
-<link rel="icon" href="https://raw.githubusercontent.com/apishunior2024/matematico/refs/heads/main/matematico192.jpg" type="image/png" />
+<link rel="icon" href="icons/icon-192.png" type="image/png" />
 
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
@@ -35,7 +35,7 @@
     box-shadow: 0 15px 40px rgba(252,182,159,0.5);
     max-width: 420px;
     width: 100%;
-    padding: 30px 25px 40px 25px;
+    padding: 30px 25px 30px 25px; /* Reducido padding-bottom para menos espacio vacío */
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -82,13 +82,13 @@
     user-select: none;
   }
 
+  /* Más alto para permitir filas */
   .illustration {
-    height: 120px;
+    height: 180px;
     max-width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
 
-  /* Animación de rebote para las bolitas */
   @keyframes bounce {
     0%,100% { transform: translateY(0); }
     50% { transform: translateY(-12px); }
@@ -98,7 +98,6 @@
     transform-origin: center;
   }
 
-  /* Animaciones para resaltar bolitas */
   .highlight {
     animation: pulseHighlight 1.5s ease-in-out infinite;
   }
@@ -132,19 +131,18 @@
     transform: none;
   }
 
-  .message {
+  /* Mensaje justo debajo del botón */
+  #result-message {
+    margin-top: 10px;
+    min-height: 45px;
     font-size: 1.4rem;
     font-weight: 700;
-    min-height: 45px;
-    margin: 10px 0 5px;
     color: #d1583b;
   }
-
   .correct {
     color: #2a9d8f;
     animation: pulseGreen 1.2s ease infinite;
   }
-
   .incorrect {
     color: #e76f51;
     animation: shake 0.4s ease;
@@ -158,7 +156,6 @@
       text-shadow: 0 0 18px #2a9d8f88;
     }
   }
-
   @keyframes shake {
     0% { transform: translateX(0); }
     20%, 60% { transform: translateX(-6px); }
@@ -175,20 +172,19 @@
     line-height: 1.4;
   }
 
+  /* Mensaje footer cerca, sin mucho espacio */
   .footer-note {
-    margin-top: 25px;
+    margin-top: 10px;
     font-size: 1rem;
     font-style: italic;
     color: #ae7e67;
   }
 
-  /* Botones extras para instalar y compartir */
   #install-btn, #share-btn {
     max-width: 200px;
     margin: 10px auto 15px;
   }
 
-  /* Responsive */
   @media (max-width: 440px) {
     .operation {
       font-size: 3rem;
@@ -206,7 +202,7 @@
 </style>
 </head>
 <body>
-<!-- Botones para instalar y compartir -->
+
 <button id="install-btn" style="display:none;">Instalar App</button>
 <button id="share-btn" style="display:none;">Compartir esta App</button>
 
@@ -227,7 +223,7 @@
 
   <div class="operation" aria-live="polite" aria-atomic="true" id="problem">0 + 0 = ?</div>
 
-  <svg class="illustration" aria-hidden="true" viewBox="0 0 260 120" xmlns="http://www.w3.org/2000/svg" role="presentation"></svg>
+  <svg class="illustration" aria-hidden="true" viewBox="0 0 260 180" xmlns="http://www.w3.org/2000/svg" role="presentation"></svg>
 
   <input
     type="number"
@@ -240,9 +236,12 @@
   />
 
   <button id="check-btn" aria-label="Comprobar respuesta">Comprobar</button>
+
+  <!-- Mensaje justo debajo del botón -->
+  <div id="result-message" aria-live="assertive"></div>
+
   <button id="new-problem-btn" style="display:none;" aria-label="Nuevo problema">Nuevo problema</button>
 
-  <div class="message" aria-live="assertive" id="result-message"></div>
   <div class="teaching-step" id="teaching-step" aria-live="polite"></div>
 
   <div class="footer-note">
@@ -271,7 +270,6 @@
   let teachingModeActive = false;
   let teachingInterval = null;
 
-  // Función para hablar texto con SpeechSynthesis
   function speak(text) {
     if('speechSynthesis' in window) {
       speechSynthesis.cancel();
@@ -282,44 +280,56 @@
     }
   }
 
-  // Limpia el SVG de bolitas y líneas
   function clearSvg() {
     while(svg.firstChild) {
       svg.removeChild(svg.firstChild);
     }
   }
 
-  // Dibuja bolitas con separación, animación y opcional separación entre grupos para visualizar partes
-  // groups: array con elementos {count, color} para dibujar secuencialmente con separación
+  // Dibuja bolitas agrupadas en filas sin salirse del SVG visible
   function drawGroupedDots(groups) {
     clearSvg();
-    const radius = 12;
-    const space = 24;
-    const groupSpace = 40; // separación entre grupos
-    let xpos = 15;
+
+    const radius = 18;
+    const space = 36;
+    const groupSpace = 50;
+    const maxPerRow = 8;
+
+    let xpos = 10;
+    let ypos = 30;
+    let dotsInCurrentRow = 0;
 
     groups.forEach(({count, color}) => {
       for(let i=0; i<count; i++) {
         const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
         circle.setAttribute('cx', xpos);
-        circle.setAttribute('cy', 55);
+        circle.setAttribute('cy', ypos);
         circle.setAttribute('r', radius);
         circle.setAttribute('fill', color);
         circle.classList.add('bounce');
         circle.setAttribute('aria-hidden', 'true');
         svg.appendChild(circle);
+
         xpos += space;
+        dotsInCurrentRow++;
+
+        if(dotsInCurrentRow >= maxPerRow) {
+          xpos = 10;
+          ypos += space;
+          dotsInCurrentRow = 0;
+        }
       }
-      xpos += groupSpace;
+
+      if(dotsInCurrentRow > 0) {
+        xpos += groupSpace;
+      }
     });
   }
 
-  // Remueve la clase highlight de todas las bolitas
   function clearHighlights() {
     svg.querySelectorAll('circle').forEach(c => c.classList.remove('highlight'));
   }
 
-  // Resalta una bolita específica para contarla visualmente
   function highlightDot(index) {
     clearHighlights();
     const circles = svg.querySelectorAll('circle');
@@ -328,7 +338,6 @@
     }
   }
 
-  // Enseñanza paso a paso para SUMA explicando y contando bolitas
   function teachSum(a, b) {
     teachingStep.textContent = `Vamos a sumar ${a} más ${b}.`;
     speak(`Vamos a sumar ${a} más ${b}`);
@@ -344,7 +353,6 @@
     teachingModeActive = true;
     checkBtn.disabled = true;
     answerInput.disabled = true;
-    
     clearHighlights();
 
     teachingInterval = setInterval(() => {
@@ -354,9 +362,9 @@
           speak('Contemos las bolitas del primer grupo');
         }
         if(countIndex < a) {
-          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
-          teachingStep.textContent = `Contamos: ${textToSpeak}`;
-          speak(textToSpeak);
+          const words = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`,`once`,`doce`];
+          teachingStep.textContent = `Contamos: ${words[countIndex] || countIndex + 1}`;
+          speak(words[countIndex] || (countIndex + 1).toString());
           highlightDot(countIndex);
           countIndex++;
         } else {
@@ -370,9 +378,9 @@
           speak('Ahora contamos las bolitas del segundo grupo');
         }
         if(countIndex < b) {
-          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
-          teachingStep.textContent = `Contamos: ${textToSpeak}`;
-          speak(textToSpeak);
+          const words = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`,`once`,`doce`];
+          teachingStep.textContent = `Contamos: ${words[countIndex] || countIndex + 1}`;
+          speak(words[countIndex] || (countIndex + 1).toString());
           highlightDot(a + countIndex);
           countIndex++;
         } else {
@@ -388,9 +396,9 @@
           speak('Ahora juntamos todas las bolitas y las contamos');
         }
         if(countIndex < a + b) {
-          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`,`once`,`doce`][countIndex];
-          teachingStep.textContent = `Contamos: ${textToSpeak}`;
-          speak(textToSpeak);
+          const words = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`,`once`,`doce`];
+          teachingStep.textContent = `Contamos: ${words[countIndex] || countIndex + 1}`;
+          speak(words[countIndex] || (countIndex + 1).toString());
           highlightDot(countIndex);
           countIndex++;
         } else {
@@ -407,17 +415,14 @@
     }, 2600);
   }
 
-  // Enseñanza paso a paso para RESTA explicando y contando bolitas
   function teachSubtract(a, b) {
     teachingStep.textContent = `Vamos a restar ${b} de ${a}.`;
     speak(`Vamos a restar ${b} de ${a}`);
 
-    drawGroupedDots([
-      {count: a, color: '#e63946'}
-    ]);
+    drawGroupedDots([{count: a, color: '#e63946'}]);
 
     let countIndex = 0;
-    let phase = 'countFirst'; 
+    let phase = 'countFirst';
 
     teachingModeActive = true;
     checkBtn.disabled = true;
@@ -429,14 +434,14 @@
 
     teachingInterval = setInterval(() => {
       if(phase === 'countFirst') {
-        if(countIndex === 0) {
+        if(countIndex === 0){
           teachingStep.textContent = `Contemos las bolitas del primer número:`;
           speak('Contemos las bolitas del primer número');
         }
         if(countIndex < a) {
-          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
-          teachingStep.textContent = `Contamos: ${textToSpeak}`;
-          speak(textToSpeak);
+          const words = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`];
+          teachingStep.textContent = `Contamos: ${words[countIndex] || countIndex + 1}`;
+          speak(words[countIndex] || (countIndex+1).toString());
           highlightDot(countIndex);
           countIndex++;
         } else {
@@ -445,7 +450,7 @@
           clearHighlights();
         }
       } else if(phase === 'removeSecond') {
-        if(countIndex === 0){
+        if(countIndex === 0) {
           teachingStep.textContent = `Ahora quitamos ${b} bolitas.`;
           speak(`Ahora quitamos ${b} bolitas`);
         }
@@ -478,9 +483,8 @@
             }
             crossedIndices.push(indexToCross);
           }
-          const textToSpeak = `Quitamos: ${countIndex + 1}`;
-          speak(textToSpeak);
-          teachingStep.textContent = textToSpeak;
+          teachingStep.textContent = `Quitamos: ${countIndex + 1}`;
+          speak((countIndex + 1).toString());
           countIndex++;
         } else {
           countIndex = 0;
@@ -494,9 +498,9 @@
         }
         const remaining = a - b;
         if(countIndex < remaining) {
-          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
-          teachingStep.textContent = `Contamos: ${textToSpeak}`;
-          speak(textToSpeak);
+          const words = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`];
+          teachingStep.textContent = `Contamos: ${words[countIndex] || countIndex + 1}`;
+          speak(words[countIndex] || (countIndex + 1).toString());
           highlightDot(countIndex);
           countIndex++;
         } else {
@@ -534,7 +538,7 @@
 
     answerInput.value = '';
     resultMessage.textContent = '';
-    resultMessage.className = 'message';
+    resultMessage.className = '';
     checkBtn.style.display = 'inline-block';
     newProblemBtn.style.display = 'none';
     answerInput.disabled = false;
@@ -560,7 +564,7 @@
 
     if(isNaN(userAnswer)){
       resultMessage.textContent = 'Por favor, ingresa un número válido.';
-      resultMessage.className = 'message incorrect';
+      resultMessage.className = 'incorrect';
       incorrectSound.play();
       answerInput.focus();
       return;
@@ -568,7 +572,7 @@
 
     if(userAnswer === currentProblem.answer){
       resultMessage.textContent = 'Muy bien, respuesta correcta.';
-      resultMessage.className = 'message correct';
+      resultMessage.className = 'correct';
       correctSound.play();
       checkBtn.style.display = 'none';
       newProblemBtn.style.display = 'inline-block';
@@ -576,7 +580,7 @@
       checkBtn.disabled = true;
     } else {
       resultMessage.textContent = 'Inténtalo de nuevo, esa no es la respuesta.';
-      resultMessage.className = 'message incorrect';
+      resultMessage.className = 'incorrect';
       incorrectSound.play();
       answerInput.focus();
     }
@@ -592,7 +596,6 @@
   operationSelect.addEventListener('change', generateProblem);
 
   generateProblem();
-
 
   // --- PWA: Botón instalar ---
   const installBtn = document.getElementById('install-btn');
@@ -615,7 +618,6 @@
       deferredPrompt = null;
     }
   });
-
 
   // --- Botón para compartir ---
   const shareBtn = document.getElementById('share-btn');
@@ -644,4 +646,3 @@ if ('serviceWorker' in navigator) {
 </script>
 </body>
 </html>
-
