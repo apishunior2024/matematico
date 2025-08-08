@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Aprende a Sumar y Restar con Explicación Detallada</title>
+
+<!-- Manifest y meta para PWA -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#a0c4ff" />
+<link rel="icon" href="icons/icon-192.png" type="image/png" />
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: linear-gradient(135deg, #ffccd5 0%, #a0c4ff 100%);
+    font-family: 'Fredoka One', cursive, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 15px;
+    flex-direction: column;
+  }
+
+  .container {
+    background: #fff8f0;
+    border-radius: 25px;
+    box-shadow: 0 15px 40px rgba(252,182,159,0.5);
+    max-width: 420px;
+    width: 100%;
+    padding: 30px 25px 40px 25px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  h1 {
+    color: #ff6f61;
+    font-size: 2.6rem;
+    margin: 0;
+    text-shadow: 1px 1px 5px #fcb69faa;
+  }
+
+  label {
+    color: #d1583b;
+    font-size: 1.25rem;
+  }
+
+  select,
+  input[type="number"] {
+    font-family: 'Fredoka One', cursive, sans-serif;
+    font-size: 1.3rem;
+    padding: 10px 15px;
+    border-radius: 18px;
+    border: 3px solid #ff6f61;
+    outline-offset: 2px;
+    outline-color: transparent;
+    transition: outline-color 0.3s ease, box-shadow 0.3s ease;
+    width: 100%;
+  }
+  select:focus,
+  input[type="number"]:focus {
+    outline-color: #ff9c90;
+    box-shadow: 0 0 10px 3px #ff9c90aa;
+  }
+
+  .operation {
+    font-size: 3.6rem;
+    font-weight: 900;
+    color: #d1583b;
+    min-height: 70px;
+    margin: 10px 0 5px;
+    letter-spacing: 2.5px;
+    user-select: none;
+  }
+
+  .illustration {
+    height: 120px;
+    max-width: 100%;
+    margin-bottom: 15px;
+  }
+
+  /* Animación de rebote para las bolitas */
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .bounce {
+    animation: bounce 1.2s ease-in-out infinite;
+    transform-origin: center;
+  }
+
+  /* Animaciones para resaltar bolitas */
+  .highlight {
+    animation: pulseHighlight 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulseHighlight {
+    0%,100% { filter: drop-shadow(0 0 5px #ff6f61); }
+    50% { filter: drop-shadow(0 0 15px #ff6f61); }
+  }
+
+  button {
+    background: #ff6f61;
+    color: #fff8f0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 25px;
+    padding: 14px 0;
+    cursor: pointer;
+    box-shadow: 0 8px 15px rgba(255,111,97,0.55);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+  }
+  button:hover:enabled {
+    background: #ff856f;
+    transform: scale(1.05);
+  }
+  button:disabled {
+    background: #ffb7ab;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .message {
+    font-size: 1.4rem;
+    font-weight: 700;
+    min-height: 45px;
+    margin: 10px 0 5px;
+    color: #d1583b;
+  }
+
+  .correct {
+    color: #2a9d8f;
+    animation: pulseGreen 1.2s ease infinite;
+  }
+
+  .incorrect {
+    color: #e76f51;
+    animation: shake 0.4s ease;
+  }
+
+  @keyframes pulseGreen {
+    0%, 100% {
+      text-shadow: 0 0 5px #2a9d8f44;
+    }
+    50% {
+      text-shadow: 0 0 18px #2a9d8f88;
+    }
+  }
+
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+  }
+
+  .teaching-step {
+    min-height: 90px;
+    font-size: 1.15rem;
+    color: #6c4a3e;
+    margin-bottom: 5px;
+    user-select: none;
+    line-height: 1.4;
+  }
+
+  .footer-note {
+    margin-top: 25px;
+    font-size: 1rem;
+    font-style: italic;
+    color: #ae7e67;
+  }
+
+  /* Botones extras para instalar y compartir */
+  #install-btn, #share-btn {
+    max-width: 200px;
+    margin: 10px auto 15px;
+  }
+
+  /* Responsive */
+  @media (max-width: 440px) {
+    .operation {
+      font-size: 3rem;
+      min-height: 60px;
+    }
+    button {
+      font-size: 1.25rem;
+      padding: 12px 0;
+    }
+    .teaching-step {
+      min-height: 100px;
+      font-size: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+<!-- Botones para instalar y compartir -->
+<button id="install-btn" style="display:none;">Instalar App</button>
+<button id="share-btn" style="display:none;">Compartir esta App</button>
+
+<main class="container" role="main" aria-label="Juego para aprender a sumar y restar">
+  <h1>Aprende a Sumar y Restar</h1>
+
+  <label for="mode-select">Modo:</label>
+  <select id="mode-select" aria-label="Selecciona modo de aprendizaje o práctica">
+    <option value="practice">Práctica</option>
+    <option value="teach">Enseñanza paso a paso</option>
+  </select>
+
+  <label for="operation-select">Elige una operación:</label>
+  <select id="operation-select" aria-label="Selecciona suma o resta">
+    <option value="sum">Sumar (+)</option>
+    <option value="subtract">Restar (-)</option>
+  </select>
+
+  <div class="operation" aria-live="polite" aria-atomic="true" id="problem">0 + 0 = ?</div>
+
+  <svg class="illustration" aria-hidden="true" viewBox="0 0 260 120" xmlns="http://www.w3.org/2000/svg" role="presentation"></svg>
+
+  <input
+    type="number"
+    id="answer-input"
+    placeholder="Tu respuesta"
+    aria-label="Ingresar la respuesta"
+    inputmode="numeric"
+    autocomplete="off"
+    spellcheck="false"
+  />
+
+  <button id="check-btn" aria-label="Comprobar respuesta">Comprobar</button>
+  <button id="new-problem-btn" style="display:none;" aria-label="Nuevo problema">Nuevo problema</button>
+
+  <div class="message" aria-live="assertive" id="result-message"></div>
+  <div class="teaching-step" id="teaching-step" aria-live="polite"></div>
+
+  <div class="footer-note">
+    ¡Diviértete aprendiendo matemáticas y no te rindas!
+  </div>
+</main>
+
+<audio id="correct-sound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
+<audio id="incorrect-sound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
+
+<script>
+(function() {
+  const modeSelect = document.getElementById('mode-select');
+  const operationSelect = document.getElementById('operation-select');
+  const problemDiv = document.getElementById('problem');
+  const answerInput = document.getElementById('answer-input');
+  const checkBtn = document.getElementById('check-btn');
+  const newProblemBtn = document.getElementById('new-problem-btn');
+  const resultMessage = document.getElementById('result-message');
+  const teachingStep = document.getElementById('teaching-step');
+  const svg = document.querySelector('.illustration');
+  const correctSound = document.getElementById('correct-sound');
+  const incorrectSound = document.getElementById('incorrect-sound');
+
+  let currentProblem = {a:0, b:0, operation:'sum', answer:0};
+  let teachingModeActive = false;
+  let teachingInterval = null;
+
+  // Función para hablar texto con SpeechSynthesis
+  function speak(text) {
+    if('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'es-ES';
+      utterance.rate = 0.9;
+      speechSynthesis.speak(utterance);
+    }
+  }
+
+  // Limpia el SVG de bolitas y líneas
+  function clearSvg() {
+    while(svg.firstChild) {
+      svg.removeChild(svg.firstChild);
+    }
+  }
+
+  // Dibuja bolitas con separación, animación y opcional separación entre grupos para visualizar partes
+  // groups: array con elementos {count, color} para dibujar secuencialmente con separación
+  function drawGroupedDots(groups) {
+    clearSvg();
+    const radius = 12;
+    const space = 24;
+    const groupSpace = 40; // separación entre grupos
+    let xpos = 15;
+
+    groups.forEach(({count, color}) => {
+      for(let i=0; i<count; i++) {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        circle.setAttribute('cx', xpos);
+        circle.setAttribute('cy', 55);
+        circle.setAttribute('r', radius);
+        circle.setAttribute('fill', color);
+        circle.classList.add('bounce');
+        circle.setAttribute('aria-hidden', 'true');
+        svg.appendChild(circle);
+        xpos += space;
+      }
+      xpos += groupSpace;
+    });
+  }
+
+  // Remueve la clase highlight de todas las bolitas
+  function clearHighlights() {
+    svg.querySelectorAll('circle').forEach(c => c.classList.remove('highlight'));
+  }
+
+  // Resalta una bolita específica para contarla visualmente
+  function highlightDot(index) {
+    clearHighlights();
+    const circles = svg.querySelectorAll('circle');
+    if(index >= 0 && index < circles.length) {
+      circles[index].classList.add('highlight');
+    }
+  }
+
+  // Enseñanza paso a paso para SUMA explicando y contando bolitas
+  function teachSum(a, b) {
+    teachingStep.textContent = `Vamos a sumar ${a} más ${b}.`;
+    speak(`Vamos a sumar ${a} más ${b}`);
+
+    drawGroupedDots([
+      {count: a, color: '#e63946'},  
+      {count: b, color: '#2a9d8f'}   
+    ]);
+
+    let countIndex = 0;
+    let phase = 'countFirst'; 
+
+    teachingModeActive = true;
+    checkBtn.disabled = true;
+    answerInput.disabled = true;
+    
+    clearHighlights();
+
+    teachingInterval = setInterval(() => {
+      if(phase === 'countFirst') {
+        if(countIndex === 0) {
+          teachingStep.textContent = `Contemos las bolitas del primer grupo:`;
+          speak('Contemos las bolitas del primer grupo');
+        }
+        if(countIndex < a) {
+          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
+          teachingStep.textContent = `Contamos: ${textToSpeak}`;
+          speak(textToSpeak);
+          highlightDot(countIndex);
+          countIndex++;
+        } else {
+          countIndex = 0;
+          phase = 'countSecond';
+          clearHighlights();
+        }
+      } else if(phase === 'countSecond') {
+        if(countIndex === 0) {
+          teachingStep.textContent = `Ahora contamos las bolitas del segundo grupo:`;
+          speak('Ahora contamos las bolitas del segundo grupo');
+        }
+        if(countIndex < b) {
+          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
+          teachingStep.textContent = `Contamos: ${textToSpeak}`;
+          speak(textToSpeak);
+          highlightDot(a + countIndex);
+          countIndex++;
+        } else {
+          countIndex = 0;
+          phase = 'countTotal';
+          clearSvg();
+          drawGroupedDots([{count: a + b, color: '#f4a261'}]);
+          clearHighlights();
+        }
+      } else if(phase === 'countTotal') {
+        if(countIndex === 0) {
+          teachingStep.textContent = `Ahora juntamos todas las bolitas y las contamos:`;
+          speak('Ahora juntamos todas las bolitas y las contamos');
+        }
+        if(countIndex < a + b) {
+          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`,`once`,`doce`][countIndex];
+          teachingStep.textContent = `Contamos: ${textToSpeak}`;
+          speak(textToSpeak);
+          highlightDot(countIndex);
+          countIndex++;
+        } else {
+          clearInterval(teachingInterval);
+          teachingStep.textContent = 'Muy bien, ahora escribe la respuesta.';
+          speak('Muy bien, ahora escribe la respuesta.');
+          clearHighlights();
+          teachingModeActive = false;
+          checkBtn.disabled = false;
+          answerInput.disabled = false;
+          answerInput.focus();
+        }
+      }
+    }, 2600);
+  }
+
+  // Enseñanza paso a paso para RESTA explicando y contando bolitas
+  function teachSubtract(a, b) {
+    teachingStep.textContent = `Vamos a restar ${b} de ${a}.`;
+    speak(`Vamos a restar ${b} de ${a}`);
+
+    drawGroupedDots([
+      {count: a, color: '#e63946'}
+    ]);
+
+    let countIndex = 0;
+    let phase = 'countFirst'; 
+
+    teachingModeActive = true;
+    checkBtn.disabled = true;
+    answerInput.disabled = true;
+
+    clearHighlights();
+
+    let crossedIndices = [];
+
+    teachingInterval = setInterval(() => {
+      if(phase === 'countFirst') {
+        if(countIndex === 0) {
+          teachingStep.textContent = `Contemos las bolitas del primer número:`;
+          speak('Contemos las bolitas del primer número');
+        }
+        if(countIndex < a) {
+          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
+          teachingStep.textContent = `Contamos: ${textToSpeak}`;
+          speak(textToSpeak);
+          highlightDot(countIndex);
+          countIndex++;
+        } else {
+          countIndex = 0;
+          phase = 'removeSecond';
+          clearHighlights();
+        }
+      } else if(phase === 'removeSecond') {
+        if(countIndex === 0){
+          teachingStep.textContent = `Ahora quitamos ${b} bolitas.`;
+          speak(`Ahora quitamos ${b} bolitas`);
+        }
+        if(countIndex < b) {
+          const circles = svg.querySelectorAll('circle');
+          const indexToCross = a - b + countIndex;
+          if(circles[indexToCross] && !crossedIndices.includes(indexToCross)){
+            highlightDot(indexToCross);
+
+            const cx = circles[indexToCross].cx.baseVal.value;
+            const cy = circles[indexToCross].cy.baseVal.value;
+
+            for(let i=0; i<2; i++){
+              const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+              if(i === 0){
+                line.setAttribute('x1', cx - 9);
+                line.setAttribute('y1', cy - 10);
+                line.setAttribute('x2', cx + 9);
+                line.setAttribute('y2', cy + 10);
+              } else {
+                line.setAttribute('x1', cx + 9);
+                line.setAttribute('y1', cy - 10);
+                line.setAttribute('x2', cx - 9);
+                line.setAttribute('y2', cy + 10);
+              }
+              line.setAttribute('stroke', '#fff8f0');
+              line.setAttribute('stroke-width', 4);
+              line.classList.add('bounce');
+              svg.appendChild(line);
+            }
+            crossedIndices.push(indexToCross);
+          }
+          const textToSpeak = `Quitamos: ${countIndex + 1}`;
+          speak(textToSpeak);
+          teachingStep.textContent = textToSpeak;
+          countIndex++;
+        } else {
+          countIndex = 0;
+          phase = 'countRemaining';
+          clearHighlights();
+        }
+      } else if(phase === 'countRemaining') {
+        if(countIndex === 0) {
+          teachingStep.textContent = `Ahora contamos las bolitas que quedan:`;
+          speak('Ahora contamos las bolitas que quedan');
+        }
+        const remaining = a - b;
+        if(countIndex < remaining) {
+          const textToSpeak = [`uno`,`dos`,`tres`,`cuatro`,`cinco`,`seis`,`siete`,`ocho`,`nueve`,`diez`][countIndex];
+          teachingStep.textContent = `Contamos: ${textToSpeak}`;
+          speak(textToSpeak);
+          highlightDot(countIndex);
+          countIndex++;
+        } else {
+          clearInterval(teachingInterval);
+          teachingStep.textContent = 'Muy bien, ahora escribe la respuesta.';
+          speak('Muy bien, ahora escribe la respuesta.');
+          clearHighlights();
+          teachingModeActive = false;
+          checkBtn.disabled = false;
+          answerInput.disabled = false;
+          answerInput.focus();
+        }
+      }
+    }, 2800);
+  }
+
+  function generateProblem() {
+    teachingStep.textContent = '';
+    clearSvg();
+
+    let a = Math.floor(Math.random() * 6) + 1;
+    let b = Math.floor(Math.random() * 6) + 1;
+    let op = operationSelect.value;
+
+    if(op === 'subtract' && b > a) [a,b] = [b,a];
+
+    currentProblem = {
+      a,
+      b,
+      operation: op,
+      answer: op === 'sum' ? a + b : a - b
+    };
+
+    problemDiv.textContent = op === 'sum' ? `${a} + ${b} = ?` : `${a} - ${b} = ?`;
+
+    answerInput.value = '';
+    resultMessage.textContent = '';
+    resultMessage.className = 'message';
+    checkBtn.style.display = 'inline-block';
+    newProblemBtn.style.display = 'none';
+    answerInput.disabled = false;
+    checkBtn.disabled = false;
+
+    if(modeSelect.value === 'teach'){
+      teachingModeActive = true;
+      checkBtn.disabled = true;
+      answerInput.disabled = true;
+      if(op === 'sum') teachSum(a, b);
+      else teachSubtract(a, b);
+    } else {
+      teachingModeActive = false;
+      answerInput.focus();
+      clearSvg();
+    }
+  }
+
+  function checkAnswer(){
+    if(teachingModeActive) return;
+
+    const userAnswer = parseInt(answerInput.value, 10);
+
+    if(isNaN(userAnswer)){
+      resultMessage.textContent = 'Por favor, ingresa un número válido.';
+      resultMessage.className = 'message incorrect';
+      incorrectSound.play();
+      answerInput.focus();
+      return;
+    }
+
+    if(userAnswer === currentProblem.answer){
+      resultMessage.textContent = 'Muy bien, respuesta correcta.';
+      resultMessage.className = 'message correct';
+      correctSound.play();
+      checkBtn.style.display = 'none';
+      newProblemBtn.style.display = 'inline-block';
+      answerInput.disabled = true;
+      checkBtn.disabled = true;
+    } else {
+      resultMessage.textContent = 'Inténtalo de nuevo, esa no es la respuesta.';
+      resultMessage.className = 'message incorrect';
+      incorrectSound.play();
+      answerInput.focus();
+    }
+  }
+
+  checkBtn.addEventListener('click', checkAnswer);
+  newProblemBtn.addEventListener('click', () => {
+    generateProblem();
+    answerInput.focus();
+  });
+
+  modeSelect.addEventListener('change', generateProblem);
+  operationSelect.addEventListener('change', generateProblem);
+
+  generateProblem();
+
+
+  // --- PWA: Botón instalar ---
+  const installBtn = document.getElementById('install-btn');
+  let deferredPrompt;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    installBtn.style.display = 'none';
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('Usuario aceptó instalar PWA');
+      }
+      deferredPrompt = null;
+    }
+  });
+
+
+  // --- Botón para compartir ---
+  const shareBtn = document.getElementById('share-btn');
+  if (navigator.share) {
+    shareBtn.style.display = 'block';
+    shareBtn.addEventListener('click', () => {
+      navigator.share({
+        title: 'Aprende a Sumar y Restar',
+        text: 'Prueba esta app para aprender matemáticas',
+        url: window.location.href,
+      })
+      .then(() => console.log('Contenido compartido'))
+      .catch((error) => console.log('Error al compartir:', error));
+    });
+  }
+})();
+</script>
+
+<!-- Registro del Service Worker para PWA -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js')
+    .then(() => console.log('Service Worker registrado'))
+    .catch(err => console.log('Error SW:', err));
+}
+</script>
+</body>
+</html>
