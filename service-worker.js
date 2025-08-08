@@ -3,9 +3,9 @@ const urlsToCache = [
   '/',
   'index.html',
   'manifest.json',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
-  // Agrega aquí otros archivos CSS, JS, fuentes, etc. si tienes
+  'matematico192.png',
+  'matematico512.png',
+  // agrega otros recursos CSS, JS, fuentes, etc, según tu proyecto
 ];
 
 self.addEventListener('install', event => {
