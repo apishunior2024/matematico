@@ -12,10 +12,11 @@
       "type": "image/png"
     },
     {
-      "src": "matematico512.png",
+      "src": "https://raw.githubusercontent.com/apishunior2024/matematico/refs/heads/main/matematico512.jpg",
       "sizes": "512x512",
       "type": "image/png"
     }
   ]
 }
+
 
